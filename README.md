@@ -28,9 +28,6 @@ following inputs:
   * **`isabelle-version`** – Isabelle version to use for building
     *(required)*
 
-  * **`isabelle-mirror`** – Mirror of the Isabelle website from which to
-    obtain the Isabelle software *(required)*
-
   * **`github-sessions`** – Space-separated list of needed Isabelle
     sessions from other GitHub repositories, each specified as
     `⟨user-name⟩/⟨repository⟩:⟨path⟩` *(not required; defaults to the

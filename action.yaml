@@ -24,11 +24,6 @@ inputs:
     description:
       Isabelle version to use for building
     required: true
-  isabelle-mirror:
-    description:
-      Mirror of the Isabelle website from which to obtain the Isabelle
-      software
-    required: true
   github-sessions:
     description:
       Space-separated list of needed Isabelle sessions from other GitHub
@@ -49,7 +44,7 @@ runs:
         if [ ! -e '/opt/Isabelle${{ inputs.isabelle-version }}' ]
         then
           curl --fail --silent --show-error \
-            '${{ inputs.isabelle-mirror }}/website-Isabelle${{ inputs.isabelle-version }}/dist/Isabelle${{ inputs.isabelle-version }}_linux.tar.gz' |
+            'https://isabelle.in.tum.de/website-Isabelle${{ inputs.isabelle-version }}/dist/Isabelle${{ inputs.isabelle-version }}_linux.tar.gz' |
           tar --directory=/opt --extract --gzip
         fi
     - name: 'Install required Isabelle sessions from GitHub'
