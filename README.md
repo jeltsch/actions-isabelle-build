@@ -40,12 +40,7 @@ following inputs:
 Limitations
 -----------
 
-  * Isabelle versions before the current one are not provided via the
-    current Isabelle website and therefore cannot be used out of the
-    box. To use an older Isabelle version, use an archive of the
-    corresponding older website as the mirror by appending
-    `website-Isabelle⟨isabelle-version⟩/` to the mirror URL you would
-    otherwise use. This should work with Isabelle versions back until
-    2012 (including). That said, it is not guaranteed that you will be
-    able to use a particular older Isabelle version, as its interface
-    may be incompatible with this action.
+  * Isabelle versions older than 2012 cannot be used, as their websites
+    have a structure not compatible with this action. It is not
+    guaranteed that newer Isabelle versions except the current one can
+    be used, as their interfaces may be incompatible with this action.

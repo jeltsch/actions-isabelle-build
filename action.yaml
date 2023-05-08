@@ -49,7 +49,7 @@ runs:
         if [ ! -e '/opt/Isabelle${{ inputs.isabelle-version }}' ]
         then
           curl --fail --silent --show-error \
-            '${{ inputs.isabelle-mirror }}/dist/Isabelle${{ inputs.isabelle-version }}_linux.tar.gz' |
+            '${{ inputs.isabelle-mirror }}/website-Isabelle${{ inputs.isabelle-version }}/dist/Isabelle${{ inputs.isabelle-version }}_linux.tar.gz' |
           tar --directory=/opt --extract --gzip
         fi
     - name: 'Install required Isabelle sessions from GitHub'
