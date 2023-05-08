@@ -1,0 +1,87 @@
+name: 'Build Isabelle session'
+author: 'Wolfgang Jeltsch'
+description:
+  GitHub action that builds an Isabelle session in quick-and-dirty mode
+  with PDF document generation and uploads the generated PDF document as
+  a GitHub Actions artifact; intended to be run on `ubuntu-latest` in
+  the `texlive/texlive:latest` container
+inputs:
+  session-name:
+    description:
+      Name of the session
+    required: true
+  chapter-name:
+    description:
+      Name of the chapter the session belongs to
+    required: true
+  source-path:
+    description:
+      Path to the source directory of the session relative to
+      `$GITHUB_WORKSPACE`
+    required: false
+    default: '.'
+  isabelle-version:
+    description:
+      Isabelle version to use for building
+    required: true
+  isabelle-mirror:
+    description:
+      Mirror of the Isabelle website from which to obtain the Isabelle
+      software
+    required: true
+  github-sessions:
+    description:
+      Space-separated list of needed Isabelle sessions from other GitHub
+      repositories, each specified as `⟨user-name⟩/⟨repository⟩:⟨path⟩`
+    required: false
+    default: ''
+runs:
+  using: composite
+  steps:
+    - name: 'Get Isabelle from cache if available'
+      uses: actions/cache@v3
+      with:
+        key: isabelle-${{ inputs.isabelle-version }}-linux
+        path: /opt/Isabelle${{ inputs.isabelle-version }}
+    - name: 'Get Isabelle from upstream if not found in cache'
+      shell: sh
+      run: |
+        if [ ! -e '/opt/Isabelle${{ inputs.isabelle-version }}' ]
+        then
+          curl --fail --silent --show-error \
+            '${{ inputs.isabelle-mirror }}/dist/Isabelle${{ inputs.isabelle-version }}_linux.tar.gz' |
+          tar --directory=/opt --extract --gzip
+        fi
+    - name: 'Install required Isabelle sessions from GitHub'
+      shell: sh
+      run: |
+        mkdir -p "$HOME/.isabelle/Isabelle${{ inputs.isabelle-version }}"
+        for session in ${{ inputs.github-sessions }}
+        do
+          repo=$(echo "$session" | cut -d : -f 1)
+          path=$(echo "$session" | cut -d : -f 2)
+          account=$(echo "$repo" | cut -d / -f 1)
+          mkdir -p "/opt/other-isabelle-repos/$account"
+          curl --fail --silent --show-error \
+            "https://codeload.github.com/$repo/zip/refs/heads/master" \
+            > "/opt/other-isabelle-repos/$repo.zip"
+          unzip -d "/opt/other-isabelle-repos/$account" \
+            "/opt/other-isabelle-repos/$repo.zip"
+          echo \
+            "/opt/other-isabelle-repos/$repo-master/$path" \
+            >> "$HOME/.isabelle/Isabelle${{ inputs.isabelle-version }}/ROOTS"
+        done
+    - name: 'Build'
+      shell: sh
+      run: |
+        '/opt/Isabelle${{ inputs.isabelle-version }}/bin/isabelle' \
+          build \
+          -o quick_and_dirty \
+          -o document=pdf \
+          -P output \
+          -D '${{ inputs.source-path }}'
+    - name: 'Upload document'
+      uses: actions/upload-artifact@v3
+      with:
+        name: document
+        path: output/${{ inputs.chapter-name }}/${{ inputs.session-name }}/document.pdf
