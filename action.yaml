@@ -24,6 +24,12 @@ inputs:
     description:
       Isabelle version to use for building
     required: true
+  afp-sessions:
+    Space-separated list of needed Isabelle sessions from the Archive of
+    Formal Proofs, each specified as `⟨session-name⟩:⟨version⟩` with
+    `⟨version⟩` being either `⟨year⟩-⟨month⟩-⟨day⟩` or `current`
+    required: false
+    default: ''
   github-sessions:
     description:
       Space-separated list of needed Isabelle sessions from other GitHub
@@ -47,23 +53,40 @@ runs:
             'https://isabelle.in.tum.de/website-Isabelle${{ inputs.isabelle-version }}/dist/Isabelle${{ inputs.isabelle-version }}_linux.tar.gz' |
           tar --directory=/opt --extract --gzip
         fi
-    - name: 'Install required Isabelle sessions from GitHub'
+    - name: 'Create configuration directory'
       shell: sh
       run: |
         mkdir -p "$HOME/.isabelle/Isabelle${{ inputs.isabelle-version }}"
+    - name: 'Install required Isabelle sessions from the AFP'
+      shell: sh
+      run: |
+        for session in ${{ inputs.afp-sessions }}
+        do
+          name=$(echo "$session" | cut -d : -f 1)
+          version=$(echo "$session" | cut -d : -f 2)
+          curl --fail --silent --show-error \
+            "https://www.isa-afp.org/release/afp-$name-$version.tar.gz" |
+          tar --directory=/opt/afp-sessions --extract --gzip
+          echo \
+            "/opt/afp-sessions/$name" \
+            >> "$HOME/.isabelle/Isabelle${{ inputs.isabelle-version }}/ROOTS"
+        done
+    - name: 'Install required Isabelle sessions from GitHub'
+      shell: sh
+      run: |
         for session in ${{ inputs.github-sessions }}
         do
           repo=$(echo "$session" | cut -d : -f 1)
           path=$(echo "$session" | cut -d : -f 2)
           account=$(echo "$repo" | cut -d / -f 1)
-          mkdir -p "/opt/other-isabelle-repos/$account"
+          mkdir -p "/opt/github-repos/$account"
           curl --fail --silent --show-error \
             "https://codeload.github.com/$repo/zip/refs/heads/master" \
-            > "/opt/other-isabelle-repos/$repo.zip"
-          unzip -d "/opt/other-isabelle-repos/$account" \
-            "/opt/other-isabelle-repos/$repo.zip"
+            > "/opt/github-repos/$repo.zip"
+          unzip -d "/opt/github-repos/$account" \
+            "/opt/github-repos/$repo.zip"
           echo \
-            "/opt/other-isabelle-repos/$repo-master/$path" \
+            "/opt/github-repos/$repo-master/$path" \
             >> "$HOME/.isabelle/Isabelle${{ inputs.isabelle-version }}/ROOTS"
         done
     - name: 'Build'

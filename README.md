@@ -28,10 +28,20 @@ following inputs:
   * **`isabelle-version`** – Isabelle version to use for building
     *(required)*
 
+  * **`afp-sessions`** – Space-separated list of needed Isabelle
+    sessions from the [Archive of Formal Proofs][afp], each specified as
+    `⟨session-name⟩:⟨version⟩` with `⟨version⟩` being either
+    `⟨year⟩-⟨month⟩-⟨day⟩` or `current` *(not required; defaults to the
+    empty list)*
+
   * **`github-sessions`** – Space-separated list of needed Isabelle
     sessions from other GitHub repositories, each specified as
     `⟨user-name⟩/⟨repository⟩:⟨path⟩` *(not required; defaults to the
     empty list)*
+
+[afp]:
+    https://www.isa-afp.org/
+    "Archive of Formal Proofs"
 
 
 Limitations
