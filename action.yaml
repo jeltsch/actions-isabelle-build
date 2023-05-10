@@ -61,6 +61,7 @@ runs:
     - name: 'Install required Isabelle sessions from the AFP'
       shell: sh
       run: |
+        mkdir /opt/afp-sessions
         for session in ${{ inputs.afp-sessions }}
         do
           name=$(echo "$session" | cut -d : -f 1)
