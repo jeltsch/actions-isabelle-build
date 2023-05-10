@@ -25,9 +25,10 @@ inputs:
       Isabelle version to use for building
     required: true
   afp-sessions:
-    Space-separated list of needed Isabelle sessions from the Archive of
-    Formal Proofs, each specified as `⟨session-name⟩:⟨version⟩` with
-    `⟨version⟩` being either `⟨year⟩-⟨month⟩-⟨day⟩` or `current`
+    description:
+      Space-separated list of needed Isabelle sessions from the Archive
+      of Formal Proofs, each specified as `⟨session-name⟩:⟨version⟩`
+      with `⟨version⟩` being either `⟨year⟩-⟨month⟩-⟨day⟩` or `current`
     required: false
     default: ''
   github-sessions:
